@@ -1,0 +1,47 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/SpringFramework/AbstractController.java to edit this template
+ */
+package com.csye6220.medshop.controller;
+
+import com.csye6220.medshop.model.Order;
+import com.csye6220.medshop.service.MedService;
+import com.csye6220.medshop.service.OrderService;
+import com.csye6220.medshop.service.UserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/orders")
+public class OrderController {
+
+    @Autowired
+    private OrderService orderService;
+    
+//    @Autowired
+//    private UserService userService;
+//
+//    @Autowired
+//    private MedService medService; 
+    
+    @GetMapping("/all")
+    public String getAllOrders(Model model) {
+        List<Order> orders = orderService.getAllOrders();
+        model.addAttribute("orders", orders);
+        return "adminOrders";
+    }
+
+    @PostMapping("/process")
+    public String processOrder(@RequestParam("id") int id) {
+        orderService.processOrder(id);
+        return "redirect:/orders/all";
+    }
+
+}
+
+

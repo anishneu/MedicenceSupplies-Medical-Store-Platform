@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#eaf3f0"/>
+  <rect x="310" y="130" width="180" height="300" rx="90" fill="#5b8a7e"/>
+  <rect x="340" y="170" width="120" height="220" rx="60" fill="#f4fbf8"/>
+  <text x="400" y="520" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#074038">Omeprazole</text>
+</svg>

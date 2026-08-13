@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="800" y2="600">
+      <stop stop-color="#d7ebe4"/>
+      <stop offset="1" stop-color="#b8d9cf"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <rect x="280" y="140" width="240" height="320" rx="28" fill="#0b5f52"/>
+  <rect x="330" y="190" width="140" height="40" rx="12" fill="#f4fbf8"/>
+  <rect x="360" y="250" width="80" height="160" rx="16" fill="#f4fbf8"/>
+  <text x="400" y="520" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#074038">Amoxicillin</text>
+</svg>
