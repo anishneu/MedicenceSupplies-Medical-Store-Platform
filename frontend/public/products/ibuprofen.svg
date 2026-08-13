@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#e8f1ee"/>
+  <ellipse cx="400" cy="290" rx="120" ry="170" fill="#c45c26"/>
+  <rect x="340" y="120" width="120" height="50" rx="10" fill="#074038"/>
+  <circle cx="400" cy="280" r="36" fill="#fff8f3"/>
+  <text x="400" y="520" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#074038">Ibuprofen</text>
+</svg>

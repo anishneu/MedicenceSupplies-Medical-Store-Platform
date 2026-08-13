@@ -1,0 +1,44 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.csye6220.medshop.service;
+
+import com.csye6220.medshop.dao.StockRequestDao;
+import com.csye6220.medshop.model.StockRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class StockRequestService {
+
+    @Autowired
+    private StockRequestDao stockRequestDao;
+
+    @Transactional
+    public void addStockRequest(int medId, int quantity) {
+        StockRequest request = new StockRequest(medId, quantity, "PENDING");
+        stockRequestDao.persist(request);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StockRequest> getAllRequests() {
+        return stockRequestDao.findAll();
+    }
+
+    @Transactional
+    public void updateRequestStatus(int requestId, String status) {
+        StockRequest request = stockRequestDao.findById(requestId);
+        if (request != null) {
+            request.setStatus(status);
+            stockRequestDao.update(request);
+        }
+    }
+}
+
+
+
+

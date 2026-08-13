@@ -1,0 +1,334 @@
+
+
+// DAO -
+
+// MedDao.java
+
+package com.csye6220.medshop.dao;
+
+import com.csye6220.medshop.model.Med;
+import org.springframework.stereotype.Repository;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+@Repository
+public class MedDao {
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
+    public void persist(Med entity) {
+        getCurrentSession().save(entity);
+    }
+
+    public void update(Med entity) {
+        getCurrentSession().merge(entity);
+    }
+
+    public Med findById(int id) {
+        return (Med) getCurrentSession().get(Med.class, id);
+    }
+
+    public void delete(Med entity) {
+        getCurrentSession().delete(entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Med> findAll() {
+        return getCurrentSession().createQuery("from Med").list();
+    }
+
+    public void deleteAll() {
+        List<Med> entityList = findAll();
+        for (Med entity : entityList) {
+            delete(entity);
+        }
+    }
+}
+
+
+
+
+// OrderDao.java
+
+package com.csye6220.medshop.dao;
+
+import com.csye6220.medshop.model.Order;
+import java.util.List;
+import org.springframework.stereotype.Repository;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+@Repository
+public class OrderDao {
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    private Session getSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
+    public void persist(Order entity) {
+        getSession().save(entity);
+    }
+
+    public void update(Order entity) {
+        getSession().update(entity);
+    }
+
+    public Order findById(int id) {
+        return (Order) getSession().get(Order.class, id);
+    }
+
+    public void delete(Order entity) {
+        getSession().delete(entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Order> findAll() {
+        return getSession().createQuery("from Order").list();
+    }
+
+    public List<Order> getOrdersByUserId(int userId) {
+        return getSession()
+                .createQuery("from Order where userId = :userId")
+                .setParameter("userId", userId)
+                .list();
+    }
+
+    public void updateOrderStatus(int orderId, String status) {
+        String hql = "UPDATE Order o SET o.status = :status WHERE o.id = :orderId";
+        int rowsUpdated = getSession()
+                .createQuery(hql)
+                .setParameter("status", status)
+                .setParameter("orderId", orderId)
+                .executeUpdate();
+        if (rowsUpdated == 0) {
+            throw new IllegalArgumentException("Order with ID " + orderId + " not found");
+        }
+    }
+}
+
+
+
+
+// SupplierDao.java
+
+package com.csye6220.medshop.dao;
+
+import com.csye6220.medshop.model.Supplier;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public class SupplierDao {
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
+    public void persist(Supplier entity) {
+        getCurrentSession().save(entity);
+    }
+
+    public void update(Supplier entity) {
+        getCurrentSession().update(entity);
+    }
+
+    public Supplier findById(int id) {
+        return (Supplier) getCurrentSession().get(Supplier.class, id);
+    }
+
+    public void delete(Supplier entity) {
+        getCurrentSession().delete(entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Supplier> findAll() {
+        return getCurrentSession().createQuery("from Supplier").list();
+    }
+
+    public void deleteAll() {
+        List<Supplier> entityList = findAll();
+        for (Supplier entity : entityList) {
+            delete(entity);
+        }
+    }
+}
+
+
+
+
+// StockRequestDao.txt
+
+package com.csye6220.medshop.dao;
+
+import com.csye6220.medshop.model.StockRequest;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+@Repository
+public class StockRequestDao {
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
+    public void persist(StockRequest stockRequest) {
+        getCurrentSession().save(stockRequest);
+    }
+
+    public void update(StockRequest stockRequest) {
+        getCurrentSession().update(stockRequest);
+    }
+
+    public StockRequest findById(int id) {
+        return (StockRequest) getCurrentSession().get(StockRequest.class, id);
+    }
+
+    public List<StockRequest> findAll() {
+        return getCurrentSession().createQuery("from StockRequest").list();
+    }
+
+    public void delete(StockRequest stockRequest) {
+        getCurrentSession().delete(stockRequest);
+    }
+}
+
+
+
+
+// UserDao.txt
+
+package com.csye6220.medshop.dao;
+
+import com.csye6220.medshop.model.User;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository
+@Transactional
+public class UserDao {
+    
+    private Session currentSession;
+    private Transaction currentTransaction;
+    
+    public UserDao() {
+    }
+    
+    public Session openCurrentSession() {
+        currentSession = getSessionFactory().openSession();
+        return currentSession;
+    }
+ 
+    public Session openCurrentSessionwithTransaction() {
+        currentSession = getSessionFactory().openSession();
+        currentTransaction = currentSession.beginTransaction();
+        return currentSession;
+    }
+     
+    public void closeCurrentSession() {
+        currentSession.close();
+    }
+     
+    public void closeCurrentSessionwithTransaction() {
+        currentTransaction.commit();
+        currentSession.close();
+    }
+    
+    private static SessionFactory getSessionFactory() {
+        Configuration configuration = new Configuration().configure();
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties());
+        SessionFactory sessionFactory = configuration.buildSessionFactory(builder.build());
+        return sessionFactory;
+    }
+ 
+    public Session getCurrentSession() {
+        return currentSession;
+    }
+ 
+    public void setCurrentSession(Session currentSession) {
+        this.currentSession = currentSession;
+    }
+ 
+    public Transaction getCurrentTransaction() {
+        return currentTransaction;
+    }
+ 
+    public void setCurrentTransaction(Transaction currentTransaction) {
+        this.currentTransaction = currentTransaction;
+    }
+    
+    public void persist(User entity) {
+        getCurrentSession().save(entity);
+    }
+ 
+    public void update(User entity) {
+        getCurrentSession().update(entity);
+    }
+    
+    public User findById(int id) {
+        User user = (User) getCurrentSession().get(User.class, id);
+        return user; 
+    }
+    
+    public User findByName(String username) {
+        User user = (User) getCurrentSession()
+            .createQuery("FROM User WHERE username = :username")
+            .setParameter("username", username)
+            .uniqueResult();
+        return user;
+    }
+
+ 
+    public void delete(User entity) {
+        getCurrentSession().delete(entity);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<User> findAll() {
+        List<User> users = (List<User>) getCurrentSession()
+                .createQuery("from User").list();
+        return users;
+    }
+
+    public void deleteAll() {
+        List<User> entityList = findAll();
+        for (User entity : entityList) {
+            delete(entity);
+        }
+    }
+}
+
+
+

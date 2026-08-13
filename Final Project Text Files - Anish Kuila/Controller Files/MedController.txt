@@ -1,0 +1,29 @@
+package com.csye6220.medshop.controller;
+
+import com.csye6220.medshop.model.Med;
+import com.csye6220.medshop.service.MedService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/medications")
+public class MedController {
+    private final MedService medService;
+
+    @Autowired
+    public MedController(MedService medService) {
+        this.medService = medService;
+    }
+
+    @GetMapping("/browse")
+    public String browseMeds(Model model) {
+        List<Med> meds = medService.findAll();
+        model.addAttribute("meds", meds);
+        return "browseMeds";
+    }
+}

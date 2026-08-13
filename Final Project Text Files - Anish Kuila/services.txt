@@ -1,0 +1,394 @@
+
+
+// Services -
+
+// MedService.java
+
+package com.csye6220.medshop.service;
+
+import com.csye6220.medshop.dao.MedDao;
+import com.csye6220.medshop.model.Med;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class MedService {
+
+    @Autowired
+    private MedDao medDao;
+
+    public MedService() {
+        medDao = new MedDao();
+    }
+    
+    @Transactional
+    public void persist(Med entity) {
+        medDao.persist(entity);
+    }
+    
+    @Transactional
+    public void update(Med entity) {
+        medDao.update(entity);
+    }
+      
+    @Transactional
+    public void addMed(Med med) {
+        if (med.getId() == 0) {
+            medDao.persist(med);
+        } else { 
+            medDao.update(med);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Med findById(int id) {
+        return medDao.findById(id);
+    }
+
+    @Transactional
+    public void delete(int id) {
+        Med med = medDao.findById(id);
+        medDao.delete(med);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Med> findAll() {
+        return medDao.findAll();
+    }
+
+    @Transactional
+    public void deleteAll() {
+        medDao.deleteAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Med> findLowStockMedications() {
+        return medDao.findAll().stream()
+                     .filter(med -> med.getStock() < 20)
+                     .collect(Collectors.toList());
+    }
+}
+
+
+
+
+// OrderService.java
+
+package com.csye6220.medshop.service;
+
+import com.csye6220.medshop.dao.OrderDao;
+import com.csye6220.medshop.model.Order;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class OrderService {
+
+    @Autowired
+    private OrderDao orderDao;
+
+    public void persist(Order entity) {
+        orderDao.persist(entity);
+    }
+
+    public List<Order> findAll() {
+        return orderDao.findAll();
+    }
+
+    public void update(Order entity) {
+        orderDao.update(entity);
+    }
+
+    public Order findById(int id) {
+        return orderDao.findById(id);
+    }
+
+    public void delete(int id) {
+        Order order = orderDao.findById(id);
+        orderDao.delete(order);
+    }
+
+    public void placeOrder(Order order) {
+        orderDao.persist(order);
+    }
+
+    public List<Order> getOrdersByUserId(int userId) {
+        return orderDao.getOrdersByUserId(userId);
+    }
+
+    public void processOrder(int orderId) {
+        orderDao.updateOrderStatus(orderId, "Processed");
+    }
+
+    public void deleteAll() {
+        List<Order> orders = orderDao.findAll();
+        for (Order order : orders) {
+            orderDao.delete(order);
+        }
+    }
+    
+    public List<Order> getAll() {
+        List<Order> orders = orderDao.findAll();
+        return orders;
+    }
+    
+     public List<Order> getAllOrders() {
+        return orderDao.findAll();
+    }
+}
+
+
+
+
+// SupplierService.java
+
+package com.csye6220.medshop.service;
+
+import com.csye6220.medshop.dao.MedDao;
+import com.csye6220.medshop.dao.StockRequestDao;
+import com.csye6220.medshop.dao.SupplierDao;
+import com.csye6220.medshop.model.Med;
+import com.csye6220.medshop.model.StockRequest;
+import com.csye6220.medshop.model.Supplier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class SupplierService {
+
+    @Autowired
+    private MedDao medDao;
+
+    @Autowired
+    private SupplierDao supplierDAO;
+
+    @Autowired
+    private StockRequestDao stockRequestDao;
+    
+    @Transactional
+    public void persist(Supplier entity) {
+        supplierDAO.persist(entity);
+    }
+    
+    @Transactional
+    public void update(Supplier entity) {
+        supplierDAO.update(entity);
+    }
+    
+    @Transactional
+    public List<Supplier> findAll() {
+        List<Supplier> listSupplier = supplierDAO.findAll();
+        return listSupplier;
+    }
+   
+    public List<Med> getLowStockMedications() {
+        return medDao.findAll().stream()
+                .filter(med -> med.getStock() < 10)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateMedicationStock(int medId, int newStock) {
+        Med med = medDao.findById(medId);
+        if (med != null) {
+            med.setStock(newStock);
+            medDao.update(med);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Supplier> getAllSuppliers() {
+        return supplierDAO.findAll();
+    }
+
+    @Transactional
+    public void addSupplier(Supplier supplier) {
+        supplierDAO.persist(supplier);
+    }
+
+    @Transactional(readOnly = true)
+    public Supplier findById(int id) {
+        return supplierDAO.findById(id);
+    }
+
+    @Transactional
+    public void delete(int id) {
+        Supplier supplier = supplierDAO.findById(id);
+        if (supplier != null) {
+            supplierDAO.delete(supplier);
+        }
+    }
+    
+    @Transactional(readOnly = true)
+    public List<StockRequest> getAllRequests() {
+        return stockRequestDao.findAll();
+    }
+    
+    @Transactional
+    public void updateRequestStatus(int requestId, String status) {
+        StockRequest request = stockRequestDao.findById(requestId);
+        if (request != null) {
+            request.setStatus(status);
+            int medId = request.getMedId();
+            int reqStock = request.getRequestedQuantity();
+            
+            // If status is APPROVED, update associated Medication stock
+            if ("APPROVED".equals(status) &&
+                    (medId > 0) &&
+                    (reqStock > 0)
+                )
+            {
+                // Update changes to Medication table
+                Med med = medDao.findById(request.getMedId());
+                int newStock = med.getStock() + reqStock ;
+                if (newStock >  med.getStock()) {
+                    med.setId(request.getMedId());
+                    med.setStock(newStock);
+                    medDao.update(med);
+                }
+            }
+            
+            // Persist changes to both StockRequest
+            stockRequestDao.persist(request);
+        } else {
+            throw new IllegalArgumentException("Request not found with ID: " + requestId);
+        }
+    }
+}
+
+
+
+
+// StockRequest.java
+
+package com.csye6220.medshop.service;
+
+import com.csye6220.medshop.dao.StockRequestDao;
+import com.csye6220.medshop.model.StockRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class StockRequestService {
+
+    @Autowired
+    private StockRequestDao stockRequestDao;
+
+    @Transactional
+    public void addStockRequest(int medId, int quantity) {
+        StockRequest request = new StockRequest(medId, quantity, "PENDING");
+        stockRequestDao.persist(request);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StockRequest> getAllRequests() {
+        return stockRequestDao.findAll();
+    }
+
+    @Transactional
+    public void updateRequestStatus(int requestId, String status) {
+        StockRequest request = stockRequestDao.findById(requestId);
+        if (request != null) {
+            request.setStatus(status);
+            stockRequestDao.update(request);
+        }
+    }
+}
+
+
+
+
+// UserService.java
+
+package com.csye6220.medshop.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.csye6220.medshop.dao.UserDao;
+import com.csye6220.medshop.model.User;
+import java.util.List;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private static UserDao userDao;
+ 
+    public UserService() {
+        userDao = new UserDao();
+    }
+    
+    public void addUser(User entity) {
+        userDao.openCurrentSessionwithTransaction();
+        userDao.update(entity);
+        userDao.closeCurrentSessionwithTransaction();
+    }
+ 
+    public void persist(User entity) {
+        userDao.openCurrentSessionwithTransaction();
+        userDao.persist(entity);
+        userDao.closeCurrentSessionwithTransaction();
+    }
+ 
+    public void update(User entity) {
+        userDao.openCurrentSessionwithTransaction();
+        userDao.update(entity);
+        userDao.closeCurrentSessionwithTransaction();
+    }
+ 
+    public User findById(int id) {
+        userDao.openCurrentSession();
+        User user = userDao.findById(id);
+        userDao.closeCurrentSession();
+        return user;
+    }
+ 
+    public void delete(int id) {
+        userDao.openCurrentSessionwithTransaction();
+        User user = userDao.findById(id);
+        userDao.delete(user);
+        userDao.closeCurrentSessionwithTransaction();
+    }
+ 
+    public List<User> findAll() {
+        userDao.openCurrentSession();
+        List<User> users = userDao.findAll();
+        userDao.closeCurrentSession();
+        return users;
+    }
+ 
+    public void deleteAll() {
+        userDao.openCurrentSessionwithTransaction();
+        userDao.deleteAll();
+        userDao.closeCurrentSessionwithTransaction();
+    }
+ 
+    public UserDao userDao() {
+        return userDao;
+    }
+    
+    public User findByName(String username) {
+        userDao.openCurrentSession();
+        User user = userDao.findByName(username);
+        userDao.closeCurrentSession();
+        return user;
+    }
+}
+
+
+
+
+

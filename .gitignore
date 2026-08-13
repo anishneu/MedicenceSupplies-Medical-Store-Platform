@@ -1,0 +1,76 @@
+# ========================
+# Java / Spring MVC
+# ========================
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+!backend/.mvn/wrapper/maven-wrapper.jar
+
+# Maven / Gradle
+target/
+build/
+out/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Eclipse
+.project
+.classpath
+.settings/
+.metadata/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Spring Boot / Spring MVC
+spring.log
+*.springBeans
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Others
+logs/
+tmp/

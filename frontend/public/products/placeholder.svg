@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#e8f1ee"/>
+  <rect x="280" y="160" width="240" height="260" rx="28" fill="#0b5f52"/>
+  <path d="M360 250h80v40h40v80h-40v40h-80v-40h-40v-80h40z" fill="#f4fbf8"/>
+  <text x="400" y="520" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#074038">Medicence Product</text>
+</svg>
