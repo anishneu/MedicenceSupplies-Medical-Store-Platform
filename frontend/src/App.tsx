@@ -1,6 +1,7 @@
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { fetchMedications } from './api/medicence'
 import AppLayout from './components/AppLayout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import ProfilePage from './pages/ProfilePage'
@@ -23,7 +24,21 @@ import SupplierDashboardPage from './pages/SupplierDashboardPage'
 import SupplierRequestsPage from './pages/SupplierRequestsPage'
 import theme from './theme'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
+})
+
+// Start catalog fetch before routes paint so Featured products populate ASAP.
+void queryClient.prefetchQuery({
+  queryKey: ['medications'],
+  queryFn: fetchMedications,
+  staleTime: 60_000,
+})
 
 export default function App() {
   return (
