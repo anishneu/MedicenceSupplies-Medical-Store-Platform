@@ -19,11 +19,11 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { MouseEvent } from 'react'
 import { Link as RouterLink, Outlet, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { fetchProfile } from '../api/medicence'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { fetchMedications, fetchProfile } from '../api/medicence'
 import { useAuthStore } from '../store/authStore'
 import { useCartStore } from '../store/cartStore'
 import SiteFooter from './SiteFooter'
@@ -40,9 +40,20 @@ export default function AppLayout() {
   const logout = useAuthStore((s) => s.logout)
   const cartCount = useCartStore((s) => s.items.reduce((n, i) => n + i.quantity, 0))
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
+  // Warm the medications cache as soon as the shell mounts so Featured products
+  // on the landing page appear without waiting for that section to render.
+  useEffect(() => {
+    void queryClient.prefetchQuery({
+      queryKey: ['medications'],
+      queryFn: fetchMedications,
+      staleTime: 60_000,
+    })
+  }, [queryClient])
+  
   const profile = useQuery({
     queryKey: ['profile'],
     queryFn: fetchProfile,

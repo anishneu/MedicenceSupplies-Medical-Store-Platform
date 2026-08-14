@@ -2,8 +2,10 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   Container,
   Grid,
+  Skeleton,
   Stack,
   Typography,
 } from '@mui/material'
@@ -22,7 +24,11 @@ const HERO_IMAGE =
 
 export default function LandingPage() {
   const user = useAuthStore((s) => s.user)
-  const { data: meds = [] } = useQuery({ queryKey: ['medications'], queryFn: fetchMedications })
+  const { data: meds = [], isPending, isError } = useQuery({
+    queryKey: ['medications'],
+    queryFn: fetchMedications,
+    staleTime: 60_000,
+  })
   const featured = meds.filter((m) => m.featured).slice(0, 4)
   const showcase = featured.length ? featured : meds.slice(0, 4)
 
@@ -159,11 +165,29 @@ export default function LandingPage() {
             </Button>
           </Stack>
           <Grid container spacing={2.5}>
-            {showcase.map((med) => (
-              <Grid item xs={12} sm={6} md={3} key={med.id}>
-                <ProductCard medication={med} showAddToCart />
+            {isPending &&
+              Array.from({ length: 4 }).map((_, i) => (
+                <Grid item xs={12} sm={6} md={3} key={`sk-${i}`}>
+                  <Skeleton variant="rounded" height={280} sx={{ borderRadius: 3 }} />
+                </Grid>
+              ))}
+            {!isPending &&
+              !isError &&
+              showcase.map((med) => (
+                <Grid item xs={12} sm={6} md={3} key={med.id}>
+                  <ProductCard medication={med} showAddToCart />
+                </Grid>
+              ))}
+            {!isPending && isError && (
+              <Grid item xs={12}>
+                <Stack alignItems="center" spacing={1.5} py={4}>
+                  <CircularProgress size={28} />
+                  <Typography color="text.secondary" textAlign="center">
+                    Could not load featured products. Is the API running on port 8080?
+                  </Typography>
+                </Stack>
               </Grid>
-            ))}
+            )}
           </Grid>
         </Container>
       </Box>
